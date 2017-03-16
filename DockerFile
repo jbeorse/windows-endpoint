@@ -1,0 +1,13 @@
+FROM microsoft/dotnet-framework
+
+ADD jdk c:\\Java\\jdk
+ADD apache-tomcat c:\\Tomcat\\apache-tomcat
+ADD sqljdbc_auth.dll c:\\windows\\system32
+ADD sqljdbc42.jar c:\\Tomcat\apache-tomcat\lib
+ADD ODKAggregate c:\\windows\\temp\\ODKAggregate
+ADD init.ps1 /windows/temp/init.ps1
+
+RUN powershell setx /M JAVA_HOME "C:\Java\jdk"
+RUN powershell setx /M CATALINA_HOME "C:\Tomcat\apache-tomcat"
+
+CMD powershell.exe -executionpolicy bypass c:\windows\temp\init.ps1
