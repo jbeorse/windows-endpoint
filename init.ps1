@@ -48,7 +48,7 @@ echo "Read sql server hostname in certificate: $($sqlServerHostnameInCertificate
 $user = $env:USERNAME
 echo "Read user: $($user)"
 
-$authVal = "jdbc:sqlserver://$($sqlServerAddress);database=$($dbName);user=$($dbUser);password=$($dbPassword);encrypt=true;trustServerCertificate=$($sqlServerTrustCertificate);hostNameInCertificate=$($sqlServerHostnameInCertificate);loginTimeout=30"
+$authVal = "jdbc:sqlserver://$($sqlServerAddress);database=$($dbName);user=$($dbUser);password=$($dbPassword);encrypt=true;trustServerCertificate=$($sqlServerTrustCertificate);hostNameInCertificate=$($sqlServerHostnameInCertificate);loginTimeout=30;authentication=ActiveDirectoryPassword"
 echo "Auth String: $($authVal)"
 
 # Define functions for unzipping and rebuilding the war and jar files
@@ -89,6 +89,9 @@ Zip $settingsPath $settingsJarPath
 
 # Rebuild the root war
 Move-Item $rootPath $resultPath
+
+# Install permissions msi
+msiexec.exe /i "C:\Windows\temp\adalsql.msi" /qn
 
 
 # Run tomcat

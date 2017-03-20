@@ -79,7 +79,7 @@
 		<intercept-url pattern="/odk_color.png" access="true" />
 		<intercept-url pattern="/multimode_login.html" access="true" />
 		<intercept-url pattern="/relogin.html" access="true" />
-		<intercept-url pattern="/local_login.html" access="isFullyAuthenticated() and hasAuthority('AUTH_LOCAL')" />
+		<intercept-url pattern="/local_login.html" access="isFullyAuthenticated() and (hasAuthority('AUTH_LOCAL') or hasAuthority('AUTH_ACTIVE_DIRECTORY'))" />
 
 		<!-- grant access to various servlets -->
 		<intercept-url pattern="/formList" access="hasRole('ROLE_DATA_COLLECTOR') or hasRole('ROLE_DATA_VIEWER')" />
@@ -412,31 +412,20 @@
 		class="org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint">
 		<beans:property name="realmName" value="${security.server.realm.realmString}" />
 	</beans:bean>
-
-
+ 
 	<beans:bean id="basicAuthenticationProvider"
-		class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
-        <beans:property name="passwordEncoder" ref="basicAuthenticationMessageDigestPasswordEncoder" />
-        <beans:property name="saltSource">
-        	<beans:bean class="org.opendatakit.common.security.spring.AggregateUserSaltSource"/>
-        </beans:property>
-		<beans:property name="userDetailsService" ref="basicLoginService" />
-	</beans:bean>
-
-	<beans:bean id="basicLoginService"
-		class="org.opendatakit.common.security.spring.UserDetailsServiceImpl">
-		<!--	Known registered users are maintained in the registered users table -->
-		<!--	Passwords are stored as salted sha1 hashes-->
-		<beans:property name="datastore" ref="datastore"/>
-		<beans:property name="userService" ref="user_service"/>
-		<beans:property name="passwordType" value="BasicAuth"/>
-		<beans:property name="credentialType" value="Username"/>
-		<beans:property name="authorities">
-			<beans:list>
-	    		<beans:bean class="org.springframework.security.core.authority.SimpleGrantedAuthority">
-					<beans:constructor-arg value="AUTH_LOCAL"/>
-				</beans:bean>
-			</beans:list>
+		class="org.opendatakit.common.security.spring.ActiveDirectoryLdapAuthenticationProvider">
+		<beans:constructor-arg index="0" value="mezuricloud.com" />
+		<beans:constructor-arg index="1" value="ldap://mezuricloud.com" />
+		<beans:constructor-arg index="2" value="DC=mezuricloud,DC=com" />
+		<beans:property name="convertSubErrorCodesToExceptions" value="true" />
+		<beans:property name="authoritiesMapper">
+			<beans:bean class="org.opendatakit.common.security.spring.ActiveDirectoryAuthoritiesMapper">
+				<beans:constructor-arg index="0" value="${security.server.groupPrefix}" />
+			</beans:bean>
+		</beans:property>
+		<beans:property name="userDetailsContextMapper">
+			<beans:bean class="org.opendatakit.common.security.spring.ActiveDirectoryUserDetailsMapper"/>
 		</beans:property>
 	</beans:bean>
 

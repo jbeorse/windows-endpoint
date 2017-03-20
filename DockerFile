@@ -4,6 +4,7 @@ ADD jdk c:\\Java\\jdk
 ADD apache-tomcat c:\\Tomcat\\apache-tomcat
 ADD sqljdbc_auth.dll c:\\windows\\system32
 ADD sqljdbc42.jar c:\\Tomcat\apache-tomcat\lib
+ADD adalsql.msi /windows/temp/adalsql.msi
 ADD ODKAggregate c:\\windows\\temp\\ODKAggregate
 ADD init.ps1 /windows/temp/init.ps1
 
